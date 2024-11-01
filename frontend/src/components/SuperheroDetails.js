@@ -1,10 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 
 const SuperheroDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [superhero, setSuperhero] = useState(null);
 
   useEffect(() => {
@@ -14,6 +14,13 @@ const SuperheroDetails = () => {
   const fetchSuperhero = async () => {
     const response = await axios.get(`http://localhost:4000/api/superheroes/${id}`);
     setSuperhero(response.data);
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this superhero?")) {
+      await axios.delete(`http://localhost:4000/api/superheroes/${id}`);
+      navigate('/'); // Redirect to the list after deletion
+    }
   };
 
   if (!superhero) return <div>Loading...</div>;
@@ -30,6 +37,7 @@ const SuperheroDetails = () => {
         <img key={index} src={image} alt={`${superhero.nickname} image`} width="100" />
       ))}
       <Link to={`/edit/${superhero._id}`}>Edit</Link>
+      <button onClick={handleDelete}>Delete</button> {/* Delete button */}
     </div>
   );
 };
